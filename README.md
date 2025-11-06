@@ -1,1 +1,1 @@
-# SmartVinylPlayer
+# SmartVinyl
