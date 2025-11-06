@@ -1,1 +1,1 @@
-# SmartSpin
+# SmartVinylPlayer
