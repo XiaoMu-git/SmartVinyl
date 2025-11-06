@@ -1,0 +1,3 @@
+Load "..\\Build\\F103RET6.axf" 
+Erase Done.Programming Done.Verify OK.Application running ...
+Flash Load finished at 18:56:55
