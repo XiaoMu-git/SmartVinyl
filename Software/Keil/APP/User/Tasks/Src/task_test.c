@@ -25,14 +25,14 @@ void test2CoreTask(void *param) {
     char info[512];
 
     while (1) {
-        for (uint8_t i = 0; i < 10; i++) {
+        for (uint8_t i = 0; i < 5; i++) {
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
             vTaskDelay(pdMS_TO_TICKS(200));
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
             vTaskDelay(pdMS_TO_TICKS(800));
         }
         vTaskList(info);
-        // LOGI("\nname\t\tstate\tprio\tstack\tid\n%sstack space remain %u byte.\n", info, (unsigned int)xPortGetFreeHeapSize());
+        LOGI("\nname\t\tstate\tprio\tstack\tid\n%sstack space remain %u byte.\n", info, (unsigned int)xPortGetFreeHeapSize());
         
     }
 }
