@@ -16,17 +16,17 @@ int main(void) {
 
     /* -------- 初始化外设 -------- */
     clockInit();
-    dmaInit();
+    // dmaInit();
     gpioInit();
-    usbInit();
-    uartInit();
-    spiInit();
-    i2cInit();
+    // usbInit();
+    // uartInit();
+    // spiInit();
+    // i2cInit();
 
     /* --------- 创建任务 --------- */
-    createUsbTask();
-    createLogTask();
-    createUartTask();
+    // createUsbTask();
+    // createLogTask();
+    // createUartTask();
     createTestTask();
     vTaskStartScheduler();
 
