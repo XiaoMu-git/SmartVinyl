@@ -7,6 +7,10 @@
 #include "queue.h"
 #include "semphr.h"
 
+// 函数返回值
+#define RET_DONE                    (uint8_t)1
+#define RET_FAIL                    (uint8_t)0
+
 // 任务栈大小(单位:word)
 #define TASK_STACK_TINY             128
 #define TASK_STACK_SMALL            256

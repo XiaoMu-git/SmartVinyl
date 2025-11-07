@@ -7,20 +7,6 @@ void gpioInit(void) {
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
-    
-    // input PC7 (SDIO_CD)
-    GPIO_InitStruct.Pin = GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    // output PA12 (USB_DP)
-    GPIO_InitStruct.Pin = GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     // output PC13 (DEBUG_LED)
     GPIO_InitStruct.Pin = GPIO_PIN_13;

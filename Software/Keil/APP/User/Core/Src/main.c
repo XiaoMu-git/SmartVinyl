@@ -1,32 +1,21 @@
-#include "stm32f1xx_hal.h"
-#include "clock.h"
-#include "dma.h"
-#include "gpio.h"
-#include "usb.h"
-#include "uart.h"
-#include "spi.h"
-#include "i2c.h"
-#include "task_usb.h"
-#include "task_log.h"
-#include "task_uart.h"
-#include "task_test.h"
+#include "main.h"
 
 int main(void) {
     HAL_Init();
 
     /* -------- 初始化外设 -------- */
     clockInit();
-    // dmaInit();
+    dmaInit();
+    flashInit();
     gpioInit();
-    // usbInit();
-    // uartInit();
-    // spiInit();
-    // i2cInit();
+    sdioInit();
+    spiInit();
+    timInit();
+    uartInit();
+    usbInit();
 
     /* --------- 创建任务 --------- */
-    // createUsbTask();
-    // createLogTask();
-    // createUartTask();
+    createLogTask();
     createTestTask();
     vTaskStartScheduler();
 

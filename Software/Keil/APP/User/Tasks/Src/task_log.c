@@ -1,7 +1,8 @@
 #include "task_log.h"
 #include "stdarg.h"
+#include "stdio.h"
 #include "string.h"
-#include "usb.h"
+#include "uart.h"
 
 LogResource log_res;
 
@@ -14,7 +15,7 @@ void logCoreTask(void *param) {
     while (1) {
         xQueueReceive(log_res->queue, &packet, portMAX_DELAY);
         if (packet.content == NULL) continue;
-        usbSendData((uint8_t*)packet.content, strlen(packet.content));
+        HAL_UART_Transmit(&huart1, (uint8_t*)packet.content, packet.length, 100);
         vPortFree(packet.content);
         packet.content = NULL;
     }
@@ -22,9 +23,10 @@ void logCoreTask(void *param) {
 
 /// @brief 创建日志任务
 void createLogTask(void) {
-    // 分配资源
+    log_res.htask = NULL;
     log_res.queue = xQueueCreate(QUEUE_SIZE_LARGE, sizeof(LogPacket));
-    // 创建任务
+    log_res.mutex = xSemaphoreCreateMutex();
+    log_res.buff = (uint8_t*)pvPortMalloc(LOG_BUFF_SIZE * sizeof(uint8_t));
     xTaskCreate(logCoreTask, "log_core", TASK_STACK_TINY, &log_res, TASK_PRIORITY_HIGH, &log_res.htask);
 }
 
@@ -32,18 +34,26 @@ void createLogTask(void) {
 /// @param fmt 
 /// @param  
 /// @return 
-BaseType_t logSendData(const char *fmt, ...) {
+uint8_t logSendData(const char *fmt, ...) {
     if (fmt == NULL) return pdFALSE;
-    BaseType_t ret = pdFALSE;
+    uint8_t ret = RET_FAIL;
     LogPacket packet = { 0 };
-    packet.content = (char*)pvPortMalloc(LOG_BUFF_SIZE * sizeof(char));
-    if (packet.content != NULL) {
+
+    if (xSemaphoreTake(log_res.mutex, TIME_WAIT_MEDIUM) == pdTRUE) {
         va_list args;
         va_start(args, fmt);
-        vsnprintf(packet.content, LOG_BUFF_SIZE, fmt, args);
+        packet.length = vsnprintf((char*)log_res.buff, LOG_BUFF_SIZE, fmt, args);
         va_end(args);
-        ret = xQueueSend(log_res.queue, &packet, TIME_WAIT_SHORT);
-        if (ret == pdFALSE) vPortFree(packet.content);
+
+        packet.content = (char*)pvPortMalloc(packet.length);
+        if (packet.content != NULL) {
+            memcpy(packet.content, log_res.buff, packet.length);
+            if (xQueueSend(log_res.queue, &packet, TIME_WAIT_SHORT) == pdTRUE) ret = RET_DONE;
+            else vPortFree(packet.content);
+        }
+
+        xSemaphoreGive(log_res.mutex);
     }
+    
     return ret;
 }
