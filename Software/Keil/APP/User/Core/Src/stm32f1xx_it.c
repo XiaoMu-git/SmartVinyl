@@ -1,5 +1,7 @@
 #include "main.h"
 
+extern PCD_HandleTypeDef hpcd_USB_FS;
+
 void NMI_Handler(void) {
     while (1);
 }
@@ -22,10 +24,6 @@ void UsageFault_Handler(void) {
 
 void DebugMon_Handler(void) {
     
-}
-
-void TIM7_IRQHandler(void) {
-    HAL_TIM_IRQHandler(&htim7);
 }
 
 void USB_LP_CAN1_RX0_IRQHandler(void) {

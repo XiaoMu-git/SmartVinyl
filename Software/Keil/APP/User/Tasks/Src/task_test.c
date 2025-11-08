@@ -4,33 +4,35 @@
 TestResource test1_res;
 TestResource test2_res;
 
-/// @brief led 闪烁提示并打印任务信息和剩余堆资源
+/// @brief 测试各种模块
 /// @param param 
 void test1CoreTask(void *param) {
+    TestResource *test_res = (TestResource*)param;
+    UNUSED(test_res);
+
+
+    while (1) {
+        vTaskDelay(TIME_WAIT_LONG);
+    }
+}
+
+/// @brief led 闪烁提示并打印任务信息和剩余堆资源
+/// @param param 
+void test2CoreTask(void *param) {
     TestResource *test_res = (TestResource*)param;
     UNUSED(test_res);
     char info[512];
 
     while (1) {
         vTaskList(info);
-        LOGI("\nname\t\tstate\tprio\tstack\tid\n%sstack space remain %u byte.\n", info, (unsigned int)xPortGetFreeHeapSize());
+        // LOGI("\nname\t\tstate\tprio\tstack\tid\n%s", info);
+        LOGI("Stack space remain 0x%04X Byte.", (unsigned int)xPortGetFreeHeapSize());
         for (uint8_t i = 0; i < 5; i++) {
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
             vTaskDelay(pdMS_TO_TICKS(200));
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
             vTaskDelay(pdMS_TO_TICKS(800));
         }
-		}
-}
-
-/// @brief 测试各种模块
-/// @param param 
-void test2CoreTask(void *param) {
-    TestResource *test_res = (TestResource*)param;
-    UNUSED(test_res);
-
-    while (1) {
-        vTaskDelay(TIME_WAIT_LONG);
     }
 }
 
