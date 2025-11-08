@@ -16,8 +16,8 @@ void logCoreTask(void *param) {
     while (1) {
         xQueueReceive(log_res->queue, &packet, portMAX_DELAY);
         if (packet.content == NULL) continue;
-        // HAL_UART_Transmit(&huart1, (uint8_t*)packet.content, packet.length, 100);
-        usbSendData((uint8_t*)packet.content, packet.length);
+        HAL_UART_Transmit(&huart1, (uint8_t*)packet.content, packet.length, 100);
+        // usbSendData((uint8_t*)packet.content, packet.length);
         vPortFree(packet.content);
         packet.content = NULL;
     }

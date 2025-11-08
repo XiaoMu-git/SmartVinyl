@@ -9,6 +9,7 @@
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Drivers\\Peripherals\\Inc",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\FreeRTOS\\Inc",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\UsbCDC\\Inc",
+                "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\FATFS\\Inc",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Hardware\\Inc",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\User\\Core\\Inc",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\User\\Tasks\\Inc",
@@ -23,6 +24,7 @@
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\FreeRTOS\\Src",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\FreeRTOS\\Port",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\UsbCDC\\Src",
+                "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\Middlewares\\FATFS\\Src",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\User\\Core\\Src",
                 "d:\\Work\\SmartVinyl\\Software\\Keil\\APP\\User\\Tasks\\Src"
             ],

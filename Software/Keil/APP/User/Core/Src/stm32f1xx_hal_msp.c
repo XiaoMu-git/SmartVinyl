@@ -10,3 +10,9 @@ void HAL_MspInit(void) {
 
     __HAL_AFIO_REMAP_SWJ_NOJTAG();
 }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM7) {
+        HAL_IncTick();
+    }
+}

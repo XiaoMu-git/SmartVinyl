@@ -1,6 +1,6 @@
 #include "main.h"
 
- int main(void) {
+int main(void) {
     HAL_Init();
 
     /* -------- 初始化外设 -------- */

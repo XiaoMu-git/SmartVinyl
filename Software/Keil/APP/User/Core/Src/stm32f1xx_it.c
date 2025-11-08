@@ -1,4 +1,5 @@
 #include "main.h"
+#include "tim.h"
 
 extern PCD_HandleTypeDef hpcd_USB_FS;
 
@@ -28,4 +29,8 @@ void DebugMon_Handler(void) {
 
 void USB_LP_CAN1_RX0_IRQHandler(void) {
     HAL_PCD_IRQHandler(&hpcd_USB_FS);
+}
+
+void TIM7_IRQHandler(void) {
+    HAL_TIM_IRQHandler(&htim7);
 }
