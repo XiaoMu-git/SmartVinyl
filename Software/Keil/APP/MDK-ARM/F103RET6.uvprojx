@@ -913,6 +913,11 @@
           <GroupName>Uaer/Tasks</GroupName>
           <Files>
             <File>
+              <FileName>task_file.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\Tasks\Src\task_file.c</FilePath>
+            </File>
+            <File>
               <FileName>task_log.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\Tasks\Src\task_log.c</FilePath>

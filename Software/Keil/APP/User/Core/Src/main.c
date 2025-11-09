@@ -15,6 +15,7 @@ int main(void) {
     usbInit();
 
     /* --------- 创建任务 --------- */
+    createFileTask();
     createLogTask();
     createTestTask();
     vTaskStartScheduler();

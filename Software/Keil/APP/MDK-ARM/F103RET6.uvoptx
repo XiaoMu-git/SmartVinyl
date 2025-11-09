@@ -1520,6 +1520,18 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+      <PathWithFileName>..\User\Tasks\Src\task_file.c</PathWithFileName>
+      <FilenameWithoutPath>task_file.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>10</GroupNumber>
+      <FileNumber>99</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>..\User\Tasks\Src\task_log.c</PathWithFileName>
       <FilenameWithoutPath>task_log.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -1527,7 +1539,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>99</FileNumber>
+      <FileNumber>100</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

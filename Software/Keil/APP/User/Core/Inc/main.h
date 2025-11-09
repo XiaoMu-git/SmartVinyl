@@ -13,6 +13,7 @@
 #include "uart.h"
 #include "usb.h"
 
+#include "task_file.h"
 #include "task_log.h"
 #include "task_test.h"
 
