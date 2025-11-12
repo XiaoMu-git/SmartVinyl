@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE,USER_VECT_TAB_ADDRESS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CMSIS\Inc;..\CMSIS\Device\Inc;..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\Peripherals\Inc;..\Middlewares\FreeRTOS\Inc;..\Middlewares\UsbCDC\Inc;..\Middlewares\FATFS\Inc;..\Hardware\Inc;..\User\Core\Inc;..\User\Tasks\Inc</IncludePath>
+              <IncludePath>..\CMSIS\Inc;..\CMSIS\Device\Inc;..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\Peripherals\Inc;..\Drivers\Hardware\Inc;..\Middlewares\FreeRTOS\Inc;..\Middlewares\UsbCDC\Inc;..\Middlewares\FATFS\Inc;..\User\Core\Inc;..\User\Tasks\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -752,6 +752,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Drivers/Hardware</GroupName>
+          <Files>
+            <File>
+              <FileName>at24c64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Hardware\Src\at24c64.c</FilePath>
+            </File>
+            <File>
+              <FileName>w25q64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Hardware\Src\w25q64.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Middlewares/FreeRTOS</GroupName>
           <Files>
             <File>
@@ -882,9 +897,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Hardware</GroupName>
-        </Group>
-        <Group>
           <GroupName>User/Core</GroupName>
           <Files>
             <File>
@@ -912,11 +924,6 @@
         <Group>
           <GroupName>Uaer/Tasks</GroupName>
           <Files>
-            <File>
-              <FileName>task_file.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\Tasks\Src\task_file.c</FilePath>
-            </File>
             <File>
               <FileName>task_log.c</FileName>
               <FileType>1</FileType>
