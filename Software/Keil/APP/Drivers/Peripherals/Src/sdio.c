@@ -2,6 +2,7 @@
 
 SD_HandleTypeDef hsd;
 
+/// @brief SDIO 初始化函数
 void sdioInit(void) {
     GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     __HAL_RCC_SDIO_CLK_ENABLE();

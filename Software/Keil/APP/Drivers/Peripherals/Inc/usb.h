@@ -6,6 +6,8 @@
 #include "usbd_cdc.h"
 #include "usbd_desc.h"
 
+#define USB_BUFF_SIZE               (uint32_t)64
+
 extern USBD_HandleTypeDef husbd;
 
 void usbInit(void);

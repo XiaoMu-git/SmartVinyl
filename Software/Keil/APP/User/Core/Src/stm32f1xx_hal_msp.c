@@ -47,6 +47,12 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 //     if (hi2c->Instance == I2C1) xSemaphoreGive(semaphore_i2c1_rxtx);
 // }
 
+/// @brief spi 收发完成
+/// @param hspi 
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi->Instance == SPI1) xSemaphoreGive(spi1_rxtx_semaphore);
+}
+
 /// @brief spi 接收完成
 /// @param hspi 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {

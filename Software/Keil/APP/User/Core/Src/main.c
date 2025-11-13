@@ -17,7 +17,7 @@ int main(void) {
 
     /* -------- 硬件初始化 -------- */
     // AT24C64_Init(&hi2c1);
-    // W25Q64_Init(&hspi1);
+    w25q64Init(&hspi1, GPIOA, GPIO_PIN_4);
     // TF_Init(&hsd);
 
     /* --------- 创建任务 --------- */

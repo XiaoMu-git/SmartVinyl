@@ -2,6 +2,8 @@
 
 TIM_HandleTypeDef htim7;
 
+
+/// @brief 定时器初始化函数
 void timInit(void) {
     
 }

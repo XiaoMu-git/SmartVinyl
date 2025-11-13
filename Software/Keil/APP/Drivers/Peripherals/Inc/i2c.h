@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+#define I2C1_BUFF_SIZE              (uint32_t)64
+
 extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;

@@ -46,13 +46,13 @@ void USART1_IRQHandler(void) {
 //     HAL_I2C_ER_IRQHandler(&hi2c1);
 // }
 
-// void DMA1_Channel2_IRQHandler(void) {
-//     HAL_DMA_IRQHandler(&hdma_spi1_rx);
-// }
+void DMA1_Channel2_IRQHandler(void) {
+    HAL_DMA_IRQHandler(&hdma_spi1_rx);
+}
 
-// void DMA1_Channel3_IRQHandler(void) {
-//     HAL_DMA_IRQHandler(&hdma_spi1_tx);
-// }
+void DMA1_Channel3_IRQHandler(void) {
+    HAL_DMA_IRQHandler(&hdma_spi1_tx);
+}
 
 void DMA1_Channel4_IRQHandler(void) {
     HAL_DMA_IRQHandler(&hdma_uart1_tx);

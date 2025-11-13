@@ -2,13 +2,10 @@
 #define _W25Q64_H_
 
 #include "spi.h"
-#include "stdint.h"
 
-#define W25Q64_CS_GPIO              GPIOA
-#define W25Q64_CS_PIN               GPIO_PIN_4
 #define W25Q64_SECTOR_SIZE          (uint32_t)0x1000
 #define W25Q64_PAGE_SIZE            (uint32_t)0x100
-#define W25Q64_WAIT_TIME            (uint32_t)(60 * 1000)
+#define W25Q64_WAIT_TIME            (uint32_t)0xFFFF
 
 enum W25Q64_CMD_TYPE {
     W25Q64_CMD_PAGE_PROGRAM = 0x02,
@@ -21,11 +18,13 @@ enum W25Q64_CMD_TYPE {
     W25Q64_CMD_CHIP_ERASE   = 0xC7,
 };
 
-BaseType_t w25q64EraseSector(uint32_t address);
-BaseType_t w25q64EraseChip(void);
+void w25q64Init(SPI_HandleTypeDef *hspi, GPIO_TypeDef *gpio, uint16_t pin);
 uint32_t w25q64ReadJEDECID(void);
 uint32_t w25q64ReadUID(void);
+uint8_t w25q64EraseSector(uint32_t address);
+uint8_t w25q64EraseChip(void);
 BaseType_t w25q64Read(uint32_t address, uint8_t *data, uint32_t length);
+BaseType_t w25q64WritePage(uint32_t address, uint8_t *data, uint32_t length);
 BaseType_t w25q64Write(uint32_t address, uint8_t *data, uint32_t length);
 
 #endif // !_W25Q64_H_

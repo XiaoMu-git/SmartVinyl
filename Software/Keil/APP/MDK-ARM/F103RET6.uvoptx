@@ -140,7 +140,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>(105=-1,-1,-1,-1,0)</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -157,34 +157,66 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>429</LineNumber>
+          <LineNumber>88</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134296240</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_sd.c</Filename>
+          <Filename>..\Middlewares\UsbCDC\Src\usbd_conf.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\F103RET6\../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_sd.c\429</Expression>
+          <Expression>\\F103RET6\../Middlewares/UsbCDC/Src/usbd_conf.c\88</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>382</LineNumber>
+          <LineNumber>95</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134286062</Address>
+          <Address>134333200</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal.c</Filename>
+          <Filename>..\Drivers\Peripherals\Src\spi.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\F103RET6\../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c\382</Expression>
+          <Expression>\\F103RET6\../Drivers/Peripherals/Src/spi.c\95</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>53</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134285472</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\User\Core\Src\stm32f1xx_it.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\F103RET6\../User/Core/Src/stm32f1xx_it.c\53</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>49</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134285456</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\User\Core\Src\stm32f1xx_it.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\F103RET6\../User/Core/Src/stm32f1xx_it.c\49</Expression>
         </Bp>
       </Breakpoint>
       <Tracepoint>
@@ -1469,7 +1501,7 @@
 
   <Group>
     <GroupName>User/Core</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1525,7 +1557,7 @@
 
   <Group>
     <GroupName>Uaer/Tasks</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
