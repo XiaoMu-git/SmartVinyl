@@ -7,6 +7,11 @@
 #include "queue.h"
 #include "semphr.h"
 
+#define UART1_BUFF_SIZE             (uint32_t)64
+#define I2C1_BUFF_SIZE              (uint32_t)64
+#define SPI1_BUFF_SIZE              (uint32_t)64
+#define USB_BUFF_SIZE               (uint32_t)64
+
 // 函数返回值
 #define RET_DONE                    (uint8_t)1
 #define RET_FAIL                    (uint8_t)0

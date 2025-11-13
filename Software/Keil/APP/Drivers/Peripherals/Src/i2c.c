@@ -1,23 +1,18 @@
 #include "i2c.h"
+#include "string.h"
 
 I2C_HandleTypeDef hi2c1;
 DMA_HandleTypeDef hdma_i2c1_rx;
 DMA_HandleTypeDef hdma_i2c1_tx;
-uint8_t buff_i2c1_tx[I2C1_BUFF_SIZE];
-uint8_t buff_i2c1_rx[I2C1_BUFF_SIZE];
+uint8_t i2c1_tx_buff[I2C1_BUFF_SIZE];
+uint8_t i2c1_rx_buff[I2C1_BUFF_SIZE];
 
 void i2cInit(void) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     __HAL_RCC_I2C1_CLK_ENABLE();
     
-    // i2c1 scl pin
-    GPIO_InitStruct.Pin = GPIO_PIN_6;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    // i2c1 sda pin
-    GPIO_InitStruct.Pin = GPIO_PIN_7;
+    // I2C1 引脚
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -72,12 +67,4 @@ void i2cInit(void) {
     HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
     HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
-}
-
-__weak void i2cRxDmaCompare(I2C_HandleTypeDef *hi2c) {
-    UNUSED(hi2c);
-}
-
-__weak void i2cTxDmaCompare(I2C_HandleTypeDef *hi2c) {
-    UNUSED(hi2c);
 }

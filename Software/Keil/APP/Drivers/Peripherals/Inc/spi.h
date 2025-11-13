@@ -3,18 +3,15 @@
 
 #include "config.h"
 
-#define SPI_BUFF_SIZE      (uint32_t)512
-
 extern SPI_HandleTypeDef hspi1;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
-extern uint8_t buff_spi1_tx[SPI_BUFF_SIZE];
-extern uint8_t buff_spi1_rx[SPI_BUFF_SIZE];
-extern SemaphoreHandle_t semaphore_spi1_rxtx;
-extern SemaphoreHandle_t mutex_spi1_rxtx;
+extern uint8_t spi1_tx_buff[SPI1_BUFF_SIZE];
+extern uint8_t spi1_rx_buff[SPI1_BUFF_SIZE];
+extern SemaphoreHandle_t spi1_mutex;
+extern SemaphoreHandle_t spi1_rxtx_semaphore;
 
 void spiInit(void);
-void spiRxTxDmaCompare(SPI_HandleTypeDef *hspi);
-BaseType_t spi1SendRecvData(GPIO_TypeDef *gpio, uint16_t pin, uint8_t *data, uint32_t length);
+uint8_t spi1SendRecvData(GPIO_TypeDef *gpio, uint16_t pin, uint8_t *data, uint32_t length);
 
 #endif // !_SPI_H_

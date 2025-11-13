@@ -8,20 +8,20 @@ SemaphoreHandle_t flash_mutex;
 /// @param addr 
 /// @param length 
 /// @return 
-int8_t flashRangeCheck(uint32_t addr, uint32_t length) {
-    int8_t result = RET_FAIL;
+uint8_t flashRangeCheck(uint32_t addr, uint32_t length) {
+    int8_t ret = RET_FAIL;
     uint32_t begin = addr;
     uint32_t end = addr + length - 1;
     
     // 判断是否落在独立的区间内
     if (FLASH_BASE_ADDR <= begin && end <= FLASH_BASE_ADDR + FLASH_SIZE - 1) {
-        if (BOOT_ADDR <= begin && end <= BOOT_ADDR + BOOT_SIZE - 1) result = RET_FAIL; // 禁止
-        if (APP1_ADDR <= begin && end <= APP1_ADDR + APP1_SIZE - 1) result = RET_DONE;
-        if (APP2_ADDR <= begin && end <= APP2_ADDR + APP2_SIZE - 1) result = RET_DONE;
-        if (DATA_ADDR <= begin && end <= DATA_ADDR + DATA_SIZE - 1) result = RET_DONE;
+        if (BOOT_ADDR <= begin && end <= BOOT_ADDR + BOOT_SIZE - 1) ret = RET_FAIL; // 禁止
+        if (APP1_ADDR <= begin && end <= APP1_ADDR + APP1_SIZE - 1) ret = RET_DONE;
+        if (APP2_ADDR <= begin && end <= APP2_ADDR + APP2_SIZE - 1) ret = RET_DONE;
+        if (DATA_ADDR <= begin && end <= DATA_ADDR + DATA_SIZE - 1) ret = RET_DONE;
     }
 
-    return result;
+    return ret;
 }
 
 /// @brief flash 初始化函数
@@ -38,18 +38,18 @@ void flashInit(void) {
 /// @param buff 
 /// @param length 
 /// @return 
-uint8_t flashRead(uint32_t offset, uint32_t addr, uint8_t *buff, uint32_t length) {
+uint8_t flashReadData(uint32_t offset, uint32_t addr, uint8_t *buff, uint32_t length) {
     if (buff == NULL) return RET_FAIL;
-    uint8_t result = RET_FAIL;
+    uint8_t ret = RET_FAIL;
 
     // 检查区域是否合法
     if (flashRangeCheck(offset + addr, length) == RET_DONE) {
         // 拷贝数据
         memcpy(buff, (const void*)(offset + addr), length);
-        result = RET_DONE;
+        ret = RET_DONE;
     }
 
-    return result;
+    return ret;
 }
 
 /// @brief 内部 flash 写操作
@@ -58,10 +58,10 @@ uint8_t flashRead(uint32_t offset, uint32_t addr, uint8_t *buff, uint32_t length
 /// @param data 
 /// @param length 
 /// @return 
-uint8_t flashWrite(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t length) {
+uint8_t flashWriteData(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t length) {
     if (data == NULL) return RET_FAIL;
     if (length == 0) return RET_DONE;
-    uint8_t result = RET_DONE;
+    uint8_t ret = RET_DONE;
 
     // 等待互斥锁
     if (xSemaphoreTake(flash_mutex, TIME_WAIT_MEDIUM) == pdTRUE) {
@@ -83,7 +83,7 @@ uint8_t flashWrite(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t lengt
                     memcpy(page_buff + page_begin, data, page_end - page_begin + 1);
 
                     // 准备写入数据
-                    FLASH_EraseInitTypeDef erase_init_struct = {0};
+                    FLASH_EraseInitTypeDef erase_init_struct = { 0 };
                     uint32_t page_error = 0xFFFFFFFF;
                     erase_init_struct.TypeErase   = FLASH_TYPEERASE_PAGES;
                     erase_init_struct.PageAddress = page_addr;
@@ -95,25 +95,25 @@ uint8_t flashWrite(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t lengt
                             for (uint32_t i = 0; i < FLASH_PAGE_SIZE; i += 2) {
                                 uint16_t half_word = (uint16_t)page_buff[i] | (page_buff[i + 1] << 8);
                                 if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, page_addr + i, half_word) != HAL_OK) {
-                                    result = RET_FAIL;
+                                    ret = RET_FAIL;
                                     break;
                                 }
                             }
                             
-                            if (result == RET_FAIL) break;
+                            if (ret == RET_FAIL) break;
                             else {
                                 length -= page_end - page_begin + 1;
                                 data += page_end - page_begin + 1;
                             }
                         }
                         else {
-                            result = RET_FAIL;
+                            ret = RET_FAIL;
                             break;
                         }
                         HAL_FLASH_Lock();
                     }
                     else {
-                        result = RET_FAIL;
+                        ret = RET_FAIL;
                         break;
                     }
                 }
@@ -123,5 +123,5 @@ uint8_t flashWrite(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t lengt
         xSemaphoreGive(flash_mutex);
     }
 
-    return result;
+    return ret;
 }

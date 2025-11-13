@@ -2,8 +2,8 @@
 
 /// @brief 时钟初始化函数
 void clockInit(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
     
     // 配置主时钟 HSE 12MHz System 72MHz
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;

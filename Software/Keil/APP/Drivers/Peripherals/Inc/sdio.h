@@ -1,7 +1,7 @@
 #ifndef _SDIO_H_
 #define _SDIO_H_
 
-#include "stm32f1xx_hal.h"
+#include "config.h"
 
 extern SD_HandleTypeDef hsd;
 

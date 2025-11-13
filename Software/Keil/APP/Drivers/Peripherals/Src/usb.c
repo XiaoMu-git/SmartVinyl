@@ -22,6 +22,18 @@ USBD_CDC_ItfTypeDef usbd_cdc_fops = {
 
 /// @brief USB 初始化函数
 void usbInit(void) {
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+    __HAL_RCC_USB_CLK_ENABLE();
+
+    // 拉低引脚，让主机识别
+    GPIO_InitStruct.Pin = GPIO_PIN_12;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_Delay(10);
+
     // 初始化 USB 设备核心
     if (USBD_Init(&husbd, &FS_Desc, DEVICE_FS) != USBD_OK) {
         __disable_irq();
@@ -48,12 +60,8 @@ void usbInit(void) {
 
     // 申请 IPC 资源
     usb_tx_sem = xSemaphoreCreateBinary();
-    if (usb_tx_sem == NULL) {
-        __disable_irq();
-        while (1);
-    }
     usb_tx_mutex = xSemaphoreCreateMutex();
-    if (usb_tx_mutex == NULL) {
+    if (usb_tx_sem == NULL || usb_tx_mutex == NULL) {
         __disable_irq();
         while (1);
     }
@@ -99,7 +107,6 @@ uint8_t usbSendData(uint8_t *data, uint32_t length) {
 uint8_t usbRecvData(uint8_t *data, uint32_t length) {
     if (data == NULL || length == 0) return RET_FAIL;
     uint8_t result = RET_FAIL;
-
     return result;
 }
 
@@ -162,5 +169,5 @@ uint8_t cdcReceive(uint8_t *data, uint32_t *length) {
 void cdcTxCompare(void) {
     BaseType_t urgent_task = pdFALSE;
     xSemaphoreGiveFromISR(usb_tx_sem, &urgent_task);
-    // portYIELD_FROM_ISR(urgent_task);
+    portYIELD_FROM_ISR(urgent_task);
 }

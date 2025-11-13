@@ -1,7 +1,7 @@
 #ifndef _FLASH_H_
 #define _FLASH_H_
 
-#include "stm32f1xx_hal.h"
+#include "config.h"
 
 #define FLASH_BASE_ADDR     FLASH_BASE
 #define FLASH_SIZE          (uint32_t)0x00080000
@@ -17,7 +17,7 @@
 #define DATA_ADDR           (uint32_t)APP2_ADDR + APP2_SIZE
 
 void flashInit(void);
-uint8_t flashRead(uint32_t offset, uint32_t addr, uint8_t *buff, uint32_t length);
-uint8_t flashWrite(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t length);
+uint8_t flashReadData(uint32_t offset, uint32_t addr, uint8_t *buff, uint32_t length);
+uint8_t flashWriteData(uint32_t offset, uint32_t addr, uint8_t *data, uint32_t length);
 
 #endif // !_FLASH_H_

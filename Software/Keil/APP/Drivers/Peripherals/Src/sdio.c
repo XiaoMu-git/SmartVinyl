@@ -1,12 +1,9 @@
 #include "sdio.h"
-#include "ff_gen_drv.h"
-#include "sd_diskio.h"
 
 SD_HandleTypeDef hsd;
-FATFS fatfs;
 
 void sdioInit(void) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     __HAL_RCC_SDIO_CLK_ENABLE();
 
     // SDIO 引脚
@@ -37,18 +34,6 @@ void sdioInit(void) {
 
     // 切换 4 线模式
     if (HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B) != HAL_OK) {
-        __disable_irq();
-        while(1);
-    }
-
-    // 初始化 FATFS
-    if (FATFS_LinkDriver(&SD_Driver, "") != HAL_OK) {
-        __disable_irq();
-        while(1);
-    }
-
-    // 挂载 FATFS
-    if (f_mount(&fatfs, "", 1) != FR_OK) {
         __disable_irq();
         while(1);
     }

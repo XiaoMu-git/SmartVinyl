@@ -20,11 +20,11 @@ void dmaInit(void) {
     HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 8, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
-    // i2c tx
+    // i2c1 tx
     HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 8, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
     
-    // i2c rx
+    // i2c1 rx
     HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 8, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
 }

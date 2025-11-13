@@ -1,13 +1,10 @@
 #ifndef _USB_H_
 #define _USB_H_
 
-#include "stm32f1xx_hal.h"
 #include "config.h"
 #include "usbd_core.h"
 #include "usbd_cdc.h"
 #include "usbd_desc.h"
-
-#define USB_BUFF_SIZE   64
 
 extern USBD_HandleTypeDef husbd;
 

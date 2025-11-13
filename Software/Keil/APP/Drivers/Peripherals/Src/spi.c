@@ -4,42 +4,31 @@
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_rx;
 DMA_HandleTypeDef hdma_spi1_tx;
-uint8_t buff_spi1_tx[SPI_BUFF_SIZE];
-uint8_t buff_spi1_rx[SPI_BUFF_SIZE];
-SemaphoreHandle_t semaphore_spi1_rxtx;
-SemaphoreHandle_t mutex_spi1_rxtx;
+uint8_t spi1_tx_buff[SPI1_BUFF_SIZE];
+uint8_t spi1_rx_buff[SPI1_BUFF_SIZE];
+SemaphoreHandle_t spi1_mutex;
+SemaphoreHandle_t spi1_rxtx_semaphore;
 
 void spiInit(void) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     __HAL_RCC_SPI1_CLK_ENABLE();
 
-    // SPI1 SCK PIN
-    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    // SPI1 引脚
+    GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    // SPI1 MISO PIN
     GPIO_InitStruct.Pin = GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    // SPI1 MOSI PIN
-    GPIO_InitStruct.Pin = GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    // SPI1 CS PIN
     GPIO_InitStruct.Pin = GPIO_PIN_4;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    // SPI1 RX DMA
+    // 配置 DMA
     hdma_spi1_rx.Instance = DMA1_Channel2;
     hdma_spi1_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_spi1_rx.Init.PeriphInc = DMA_PINC_DISABLE;
@@ -54,7 +43,6 @@ void spiInit(void) {
     }
     __HAL_LINKDMA(&hspi1, hdmarx, hdma_spi1_rx);
 
-    // SPI1 TX DMA
     hdma_spi1_tx.Instance = DMA1_Channel3;
     hdma_spi1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_spi1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
@@ -69,7 +57,7 @@ void spiInit(void) {
     }
     __HAL_LINKDMA(&hspi1, hdmatx, hdma_spi1_tx);
 
-    // SPI1 INIT
+    // 配置参数
     hspi1.Instance = SPI1;
     hspi1.Init.Mode = SPI_MODE_MASTER;
     hspi1.Init.Direction = SPI_DIRECTION_2LINES;
@@ -88,24 +76,14 @@ void spiInit(void) {
     }
 
     // 申请 IPC 资源
-    semaphore_spi1_rxtx = xSemaphoreCreateBinary();
-    if (semaphore_spi1_rxtx == NULL) {
+    spi1_mutex = xSemaphoreCreateMutex();
+    spi1_rxtx_semaphore = xSemaphoreCreateBinary();
+    if (spi1_mutex == NULL || spi1_rxtx_semaphore == NULL) {
         __disable_irq();
         while (1);
     }
-    mutex_spi1_rxtx = xSemaphoreCreateMutex();
-    if (mutex_spi1_rxtx == NULL) {
-        __disable_irq();
-        while (1);
-    }
-}
-
-/// @brief spi1 DMA　收发完成
-/// @param hspi 
-void spiRxTxDmaCompare(SPI_HandleTypeDef *hspi) {
-    if (hspi->Instance == SPI1) {
-        xSemaphoreGive(semaphore_spi1_rxtx);
-    }
+    xSemaphoreGive(spi1_mutex);
+    xSemaphoreTake(spi1_rxtx_semaphore, 0);
 }
 
 /// @brief 使用 SPI1 收发数据
@@ -114,36 +92,38 @@ void spiRxTxDmaCompare(SPI_HandleTypeDef *hspi) {
 /// @param gpio 
 /// @param pin 
 /// @return 
-BaseType_t spi1SendRecvData(GPIO_TypeDef *gpio, uint16_t pin, uint8_t *data, uint32_t length) {
-    if (gpio == NULL || pin == 0 || data == NULL || length == 0) return pdFALSE;
-    BaseType_t result = pdFALSE;
-    // 互斥锁上锁
-    if (xSemaphoreTake(mutex_spi1_rxtx, TIME_WAIT_MEDIUM) == pdTRUE) {
+uint8_t spi1SendRecvData(GPIO_TypeDef *gpio, uint16_t pin, uint8_t *data, uint32_t length) {
+    if (gpio == NULL || pin == 0 || data == NULL) return pdFALSE;
+    uint8_t ret = RET_DONE;
+    // 申请 SPI 资源
+    if (xSemaphoreTake(spi1_mutex, TIME_WAIT_MEDIUM) == pdTRUE) {
         // 下拉片选线
         HAL_GPIO_WritePin(gpio, pin, GPIO_PIN_RESET);
-        // 使用循环，直到当前包内所有数据发送完成
-        for (uint32_t offset = 0; offset < length; offset += SPI_BUFF_SIZE) {
-            // 计算可拷贝长度
-            uint32_t copy_len = length - offset > SPI_BUFF_SIZE ? SPI_BUFF_SIZE : length - offset;
-            // 拷贝数据
-            memcpy(buff_spi1_tx, data + offset, copy_len);
-            // 清空 DMA 收发完成信号
-            xSemaphoreTake(semaphore_spi1_rxtx, 0);
-            // 开启 DMA 发送
-            result = pdFALSE;
-            if (HAL_SPI_TransmitReceive_DMA(&hspi1, buff_spi1_tx, buff_spi1_rx, copy_len) == HAL_OK) {
-                // 等待 DMA 收发完成
-                if (xSemaphoreTake(semaphore_spi1_rxtx, TIME_WAIT_SHORT) == pdTRUE) result = pdTRUE;
+        while (length > 0) {
+            uint32_t copy_length = length <= SPI1_BUFF_SIZE ? length : SPI1_BUFF_SIZE;
+            // 拷贝待发送数据
+            memcpy(spi1_tx_buff, data, copy_length);
+            // 启动 DMA 发送
+            if (HAL_SPI_TransmitReceive_DMA(&hspi1, spi1_tx_buff, spi1_rx_buff, copy_length) != HAL_OK) {
+                ret = RET_FAIL;
+                break;
             }
-            // 有一次发送失败就停止
-            if (result != pdTRUE) break;
+            // 等待收发完成
+            if (xSemaphoreTake(spi1_rxtx_semaphore, TIME_WAIT_SHORT) != pdTRUE) {
+                ret = RET_FAIL;
+                break;
+            }
             // 拷贝接收到的数据
-            memcpy(data + offset, buff_spi1_rx, copy_len);
+            memcpy(data, spi1_rx_buff, copy_length);
+            // 收发成功处理
+            data += copy_length;
+            length -= copy_length;
         }
         // 释放片选线
         HAL_GPIO_WritePin(gpio, pin, GPIO_PIN_SET);
-        // 互斥锁解锁
-        xSemaphoreGive(mutex_spi1_rxtx);
+        // 释放 SPI 资源
+        xSemaphoreGive(spi1_mutex);
     }
-    return result;
+    else ret = RET_FAIL;
+    return ret;
 }

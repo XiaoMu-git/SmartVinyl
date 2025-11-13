@@ -1,7 +1,7 @@
 #ifndef _GPIO_H_
 #define _GPIO_H_
 
-#include "stm32f1xx_hal.h"
+#include "config.h"
 
 void gpioInit(void);
 

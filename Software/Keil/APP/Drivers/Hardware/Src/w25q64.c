@@ -1,7 +1,5 @@
 #include "w25q64.h"
 #include "string.h"
-#include "task_log.h"
-#include "spi.h"
 
 /// @brief 等待芯片空闲
 /// @param wait_time 
