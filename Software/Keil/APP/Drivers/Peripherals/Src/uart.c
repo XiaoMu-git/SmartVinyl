@@ -79,7 +79,6 @@ void uartInit(void) {
         __disable_irq();
         while (1);
     }
-    xSemaphoreGive(uart1_mutex);
     xSemaphoreGive(uart1_tx_semaphore);
 
     // 启动 DMA 接收
@@ -95,9 +94,9 @@ void uartInit(void) {
 uint8_t uartSendData(UART_HandleTypeDef *huart, uint8_t *data, uint32_t length) {
     if (huart == NULL || data == NULL) return RET_FAIL;
     uint8_t ret = RET_DONE;
-
+    // 判断是哪个 UART
     if (huart->Instance == USART1) {
-        // 申请串口资源
+        // 抢占 UART1
         if (xSemaphoreTake(uart1_mutex, TIME_WAIT_MEDIUM) == pdTRUE) {
             while (length > 0) {
                 uint32_t copy_length = length <= UART1_BUFF_SIZE ? length : UART1_BUFF_SIZE;
@@ -118,11 +117,9 @@ uint8_t uartSendData(UART_HandleTypeDef *huart, uint8_t *data, uint32_t length) 
                 data += copy_length;
                 length -= copy_length;
             }
-            // 释放串口资源
             xSemaphoreGive(uart1_mutex);
         }
         else ret = RET_FAIL;
     }
-
     return ret;
 }

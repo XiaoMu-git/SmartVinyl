@@ -20,11 +20,9 @@ enum W25Q64_CMD_TYPE {
 
 void w25q64Init(SPI_HandleTypeDef *hspi, GPIO_TypeDef *gpio, uint16_t pin);
 uint32_t w25q64ReadJEDECID(void);
-uint32_t w25q64ReadUID(void);
 uint8_t w25q64EraseSector(uint32_t address);
 uint8_t w25q64EraseChip(void);
-BaseType_t w25q64Read(uint32_t address, uint8_t *data, uint32_t length);
-BaseType_t w25q64WritePage(uint32_t address, uint8_t *data, uint32_t length);
-BaseType_t w25q64Write(uint32_t address, uint8_t *data, uint32_t length);
+uint8_t w25q64Read(uint32_t address, uint8_t *data, uint32_t length);
+uint8_t w25q64Write(uint32_t address, uint8_t *data, uint32_t length);
 
 #endif // !_W25Q64_H_

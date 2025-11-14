@@ -75,7 +75,7 @@ uint8_t usbSendData(uint8_t *data, uint32_t length) {
     USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)husbd.pClassData;
     if (data == NULL || length == 0 || hcdc == NULL || hcdc->TxState != 0) return RET_FAIL;
     uint8_t result = RET_FAIL;
-    // 互斥锁上锁
+    // 抢占 USB
     if (xSemaphoreTake(usb_tx_mutex, TIME_WAIT_MEDIUM) == pdTRUE) {
         // 使用循环，直到当前包内所有数据发送完成
         for (uint32_t offset = 0; offset < length; offset += USB_BUFF_SIZE) {
@@ -94,7 +94,6 @@ uint8_t usbSendData(uint8_t *data, uint32_t length) {
             // 有一次发送失败就停止
             if (result != RET_DONE) break;
         }
-        // 互斥锁解锁
         xSemaphoreGive(usb_tx_mutex);
     }
     return result;

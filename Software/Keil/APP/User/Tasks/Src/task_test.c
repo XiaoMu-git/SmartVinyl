@@ -6,11 +6,66 @@
 TestResource test1_res;
 TestResource test2_res;
 
-char fatfs_path[] = "";
-FATFS fatfs;
-FIL file;
-FRESULT fatfs_ret;
-UINT read_len, write_len;
+void fatfsTest(void) {
+    char fatfs_path[] = "";
+    FATFS fatfs;
+    FIL file;
+    FRESULT fatfs_ret;
+    UINT read_len, write_len;
+
+    // 初始化 FATFS
+    if (FATFS_LinkDriver(&SD_Driver, fatfs_path) != HAL_OK) {
+        __disable_irq();
+        while(1);
+    }
+
+    // 挂载 FATFS
+    if (f_mount(&fatfs, fatfs_path, 1) != FR_OK) {
+        __disable_irq();
+        while(1);
+    }
+
+    /* ---------------- 写入测试 ---------------- */
+    for(int i = 0; i < 5; i++) {
+        const char* fname = "test_64KB.bin";
+        uint32_t filesize = 64 * 1024;
+
+        fatfs_ret = f_open(&file, fname, FA_CREATE_ALWAYS | FA_WRITE);
+        if(fatfs_ret != FR_OK) {
+            LOGI("Open %s Failed: %d", fname, fatfs_ret);
+            while (1) {
+                vTaskDelay(TIME_WAIT_LONG);
+            }
+        }
+
+        uint8_t buffer[1024];
+        memset(buffer, 0xAA, sizeof(buffer));
+
+        UINT total_written = 0;
+        uint32_t start_tick = HAL_GetTick();
+
+        while(total_written < filesize) {
+            uint32_t write_size = (filesize - total_written > sizeof(buffer)) ? sizeof(buffer) : (filesize - total_written);
+            fatfs_ret = f_write(&file, buffer, write_size, &write_len);
+            if(fatfs_ret != FR_OK || write_len != write_size) {
+                LOGI("Write error in %s", fname);
+            while (1) {
+                vTaskDelay(TIME_WAIT_LONG);
+            }
+            }
+            total_written += write_len;
+        }
+
+        uint32_t end_tick = HAL_GetTick();
+        f_close(&file);
+
+        float elapsed_s = (end_tick - start_tick) / 1000.0f;
+        float speed_kb_s = (total_written / 1024.0f) / elapsed_s;
+
+        LOGI("%s write done: %u bytes, time %.2fs, speed %.2f KB/s",
+            fname, total_written, elapsed_s, speed_kb_s);
+    }
+}
 
 /// @brief 测试各种模块
 /// @param param 
@@ -18,80 +73,13 @@ void test1CoreTask(void *param) {
     TestResource *test_res = (TestResource*)param;
     UNUSED(test_res);
 
-    uint8_t buf[4];
-    uint8_t ret;
-
-    // --- 读取 JEDEC ID 命令 ---
-    buf[0] = 0x9F;   // JEDEC ID 指令
-    buf[1] = 0x00;
-    buf[2] = 0x00;
-    buf[3] = 0x00;
-
-    ret = spi1SendRecvData(GPIOA, GPIO_PIN_4, buf, 4);
-    if (ret == RET_DONE) {
-        LOGI("JEDEC ID: %02X %02X %02X", buf[1], buf[2], buf[3]);
-    } else {
-        LOGI("SPI SendRecv failed!");
-    }
-
-    // // 初始化 FATFS
-    // if (FATFS_LinkDriver(&SD_Driver, fatfs_path) != HAL_OK) {
-    //     __disable_irq();
-    //     while(1);
-    // }
-
-    // // 挂载 FATFS
-    // if (f_mount(&fatfs, fatfs_path, 1) != FR_OK) {
-    //     __disable_irq();
-    //     while(1);
-    // }
-
-    // /* ---------------- 写入测试 ---------------- */
-    // for(int i = 0; i < 5; i++) {
-    //     const char* fname = "test_64KB.bin";
-    //     uint32_t filesize = 64 * 1024;
-
-    //     fatfs_ret = f_open(&file, fname, FA_CREATE_ALWAYS | FA_WRITE);
-    //     if(fatfs_ret != FR_OK) {
-    //         LOGI("Open %s Failed: %d", fname, fatfs_ret);
-    //         while (1) {
-    //             vTaskDelay(TIME_WAIT_LONG);
-    //         }
-    //     }
-
-    //     uint8_t buffer[1024];
-    //     memset(buffer, 0xAA, sizeof(buffer));
-
-    //     UINT total_written = 0;
-    //     uint32_t start_tick = HAL_GetTick();
-
-    //     while(total_written < filesize) {
-    //         uint32_t write_size = (filesize - total_written > sizeof(buffer)) ? sizeof(buffer) : (filesize - total_written);
-    //         fatfs_ret = f_write(&file, buffer, write_size, &write_len);
-    //         if(fatfs_ret != FR_OK || write_len != write_size) {
-    //             LOGI("Write error in %s", fname);
-    //         while (1) {
-    //             vTaskDelay(TIME_WAIT_LONG);
-    //         }
-    //         }
-    //         total_written += write_len;
-    //     }
-
-    //     uint32_t end_tick = HAL_GetTick();
-    //     f_close(&file);
-
-    //     float elapsed_s = (end_tick - start_tick) / 1000.0f;
-    //     float speed_kb_s = (total_written / 1024.0f) / elapsed_s;
-
-    //     LOGI("%s write done: %u bytes, time %.2fs, speed %.2f KB/s",
-    //         fname, total_written, elapsed_s, speed_kb_s);
-    // }
+    // fatfsTest();
 
     while (1) {
         vTaskDelay(TIME_WAIT_LONG);
     }
 }
-
+ 
 /// @brief led 闪烁提示并打印任务信息和剩余堆资源
 /// @param param 
 void test2CoreTask(void *param) {

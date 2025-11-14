@@ -9,7 +9,7 @@ int main(void) {
     // flashInit();
     // i2cInit();
     gpioInit();
-    sdioInit();
+    // sdioInit();
     spiInit();
     timInit();
     uartInit();

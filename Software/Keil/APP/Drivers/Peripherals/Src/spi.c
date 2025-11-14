@@ -83,8 +83,6 @@ void spiInit(void) {
         __disable_irq();
         while (1);
     }
-    xSemaphoreGive(spi1_mutex);
-    xSemaphoreTake(spi1_rxtx_semaphore, 0);
 }
 
 /// @brief 使用 SPI 收发数据
@@ -96,9 +94,9 @@ void spiInit(void) {
 uint8_t spiSendRecvData(SPI_HandleTypeDef *hspi, GPIO_TypeDef *gpio, uint16_t pin, uint8_t *data, uint32_t length) {
     if (gpio == NULL || pin == 0 || data == NULL) return pdFALSE;
     uint8_t ret = RET_DONE;
-
+    // 判断是哪个 SPI
     if (hspi->Instance == SPI1) {
-        // 申请 SPI 资源
+        // 抢占 SPI1
         if (xSemaphoreTake(spi1_mutex, TIME_WAIT_MEDIUM) == pdTRUE) {
             // 下拉片选线
             HAL_GPIO_WritePin(gpio, pin, GPIO_PIN_RESET);
@@ -124,11 +122,9 @@ uint8_t spiSendRecvData(SPI_HandleTypeDef *hspi, GPIO_TypeDef *gpio, uint16_t pi
             }
             // 释放片选线
             HAL_GPIO_WritePin(gpio, pin, GPIO_PIN_SET);
-            // 释放 SPI 资源
             xSemaphoreGive(spi1_mutex);
         }
         else ret = RET_FAIL;
     }
-
     return ret;
 }
