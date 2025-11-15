@@ -1,18 +1,14 @@
-#ifndef __AT24C64_H__
-#define __AT24C64_H__
+#ifndef _AT24C64_H_
+#define _AT24C64_H_
 
 #include "i2c.h"
-#include "stdint.h"
-#include "stdbool.h"
 
-#define AT24C64_PAGE_SIZE      32
-#define AT24C64_TOTAL_SIZE     8192
-#define AT24C64_I2C_ADDR       0xA0
+#define AT24C64_PAGE_SIZE      (uint32_t)0x0020
+#define AT24C64_TOTAL_SIZE     (uint32_t)0x2000
+#define AT24C64_I2C_ADDR       (uint32_t)0x0050
 
-void AT24C64_Init(I2C_HandleTypeDef *hi2c);
-bool AT24C64_WriteByte(uint16_t addr, uint8_t data);
-bool AT24C64_ReadByte(uint16_t addr, uint8_t *data);
-bool AT24C64_Write(uint16_t addr, const uint8_t *data, uint16_t len);
-bool AT24C64_Read(uint16_t addr, uint8_t *data, uint16_t len);
+void at24c64Init(I2C_HandleTypeDef *hi2c);
+uint8_t at24c64WriteData(uint32_t addr, uint8_t *data, uint32_t length);
+uint8_t at24c64ReadData(uint32_t addr, uint8_t *data, uint32_t length);
 
-#endif
+#endif // !_AT24C64_H_

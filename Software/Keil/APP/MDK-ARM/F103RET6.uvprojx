@@ -277,7 +277,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8010000</StartAddress>
-                <Size>0x30000</Size>
+                <Size>0x20000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -763,11 +763,6 @@
               <FileName>at24c64.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\Hardware\Src\at24c64.c</FilePath>
-            </File>
-            <File>
-              <FileName>tf_card.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\Hardware\Src\tf_card.c</FilePath>
             </File>
             <File>
               <FileName>w25q64.c</FileName>

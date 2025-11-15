@@ -15,7 +15,6 @@
 #include "usb.h"
 
 #include "at24c64.h"
-#include "tf_card.h"
 #include "w25q64.h"
 
 #include "task_log.h"

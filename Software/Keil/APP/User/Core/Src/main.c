@@ -7,7 +7,7 @@ int main(void) {
     clockInit();
     dmaInit();
     flashInit();
-    // i2cInit();
+    i2cInit();
     gpioInit();
     sdioInit();
     spiInit();
@@ -16,9 +16,8 @@ int main(void) {
     usbInit();
 
     /* -------- 硬件初始化 -------- */
-    // AT24C64_Init(&hi2c1);
+    at24c64Init(&hi2c1);
     w25q64Init(&hspi1, GPIOA, GPIO_PIN_4);
-    // TF_Init(&hsd);
 
     /* --------- 创建任务 --------- */
     createLogTask();

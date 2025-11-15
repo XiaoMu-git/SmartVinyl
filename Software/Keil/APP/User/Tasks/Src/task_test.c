@@ -7,25 +7,10 @@ TestResource test1_res;
 TestResource test2_res;
 
 void fatfsTest(void) {
-    char fatfs_path[] = "";
-    FATFS fatfs;
     FIL file;
     FRESULT fatfs_ret;
     UINT read_len, write_len;
-
-    // 初始化 FATFS
-    if (FATFS_LinkDriver(&SD_Driver, fatfs_path) != HAL_OK) {
-        __disable_irq();
-        while(1);
-    }
-
-    // 挂载 FATFS
-    if (f_mount(&fatfs, fatfs_path, 1) != FR_OK) {
-        __disable_irq();
-        while(1);
-    }
-
-    /* ---------------- 写入测试 ---------------- */
+    
     for(int i = 0; i < 5; i++) {
         const char* fname = "test_64KB.bin";
         uint32_t filesize = 64 * 1024;
@@ -33,9 +18,7 @@ void fatfsTest(void) {
         fatfs_ret = f_open(&file, fname, FA_CREATE_ALWAYS | FA_WRITE);
         if(fatfs_ret != FR_OK) {
             LOGI("Open %s Failed: %d", fname, fatfs_ret);
-            while (1) {
-                vTaskDelay(TIME_WAIT_LONG);
-            }
+            continue;
         }
 
         uint8_t buffer[1024];
@@ -45,13 +28,11 @@ void fatfsTest(void) {
         uint32_t start_tick = HAL_GetTick();
 
         while(total_written < filesize) {
-            uint32_t write_size = (filesize - total_written > sizeof(buffer)) ? sizeof(buffer) : (filesize - total_written);
+            uint32_t write_size = filesize - total_written > sizeof(buffer) ? sizeof(buffer) : filesize - total_written;
             fatfs_ret = f_write(&file, buffer, write_size, &write_len);
             if(fatfs_ret != FR_OK || write_len != write_size) {
                 LOGI("Write error in %s", fname);
-            while (1) {
-                vTaskDelay(TIME_WAIT_LONG);
-            }
+                continue;
             }
             total_written += write_len;
         }
@@ -62,71 +43,54 @@ void fatfsTest(void) {
         float elapsed_s = (end_tick - start_tick) / 1000.0f;
         float speed_kb_s = (total_written / 1024.0f) / elapsed_s;
 
-        LOGI("%s write done: %u bytes, time %.2fs, speed %.2f KB/s",
-            fname, total_written, elapsed_s, speed_kb_s);
+        LOGI("%s write done: %u bytes, time %.2fs, speed %.2f KB/s", fname, total_written, elapsed_s, speed_kb_s);
     }
 }
 
-void flashTest() {
-    uint32_t address = 0x00001234;
-    uint32_t size = 4 * 1024;
-    uint8_t *writeBuff = (uint8_t*)pvPortMalloc(size);
-    uint8_t *readBuff  = (uint8_t*)pvPortMalloc(size);
+void at24c64Test(void) {
+    const uint32_t test_addr = 0x0123;
+    const uint32_t test_len  = 64;    // 测试 64 字节
+    uint8_t *write_buf = (uint8_t*)pvPortMalloc(test_len);
+    uint8_t *read_buf = (uint8_t*)pvPortMalloc(test_len);
 
-    if (!writeBuff || !readBuff) {
-        LOGI("FlashTest: Malloc Failed!");
+    // 生成测试数据
+    for (uint32_t i = 0; i < test_len; i++) {
+        write_buf[i] = (uint8_t)(0x5A + i);   // 任意模式数据
+    }
+
+    LOGI("=== AT24C64 Test Start ===");
+    LOGI("Write Addr: 0x%04X, Size: %d bytes", test_addr, test_len);
+
+    // 写入测试
+    if (at24c64WriteData(test_addr, write_buf, test_len) == RET_DONE) {
+        LOGI("Write: OK");
+    } else {
+        LOGI("Write: FAIL");
+        return;
+    }
+    // 读取测试
+    if (at24c64ReadData(test_addr, read_buf, test_len) == RET_DONE) {
+        LOGI("Read: OK");
+    } else {
+        LOGI("Read: FAIL");
         return;
     }
 
-    // fill write buffer
-    memset(writeBuff, 0x5A, size);
-    memset(readBuff,  0x00, size);
+    // 校验数据
+    LOGI("Verifying...");
 
-    LOGI("=== Flash Test Start ===");
-    LOGI("Write Addr: 0x%08lX, Size: %lu bytes", address, size);
-
-    // ---------------------------------------
-    // Write
-    // ---------------------------------------
-    if (flashWriteData(FLASH_DATA_ADDR, address, writeBuff, size) == RET_DONE) {
-        LOGI("FlashTest: Write OK");
-    } else {
-        LOGI("FlashTest: Write FAILED!");
-        goto exit;
-    }
-
-    // ---------------------------------------
-    // Read
-    // ---------------------------------------
-    if (flashReadData(FLASH_DATA_ADDR, address, readBuff, size) == RET_DONE) {
-        LOGI("FlashTest: Read OK");
-    } else {
-        LOGI("FlashTest: Read FAILED!");
-        goto exit;
-    }
-
-    // ---------------------------------------
-    // Verify
-    // ---------------------------------------
-    LOGI("FlashTest: Verifying...");
-
-    for (uint32_t i = 0; i < size; i++) {
-        if (writeBuff[i] != readBuff[i]) {
-            LOGI("FlashTest: Verify Failed At Index %lu: W=0x%02X, R=0x%02X",
-                    i, writeBuff[i], readBuff[i]);
-            goto exit;
+    for (uint32_t i = 0; i < test_len; i++) {
+        if (write_buf[i] != read_buf[i]) {
+            LOGI("Verify FAIL at index %lu: W=0x%02X, R=0x%02X",
+                i, write_buf[i], read_buf[i]);
+            LOGI("=== AT24C64 Test End ===");
+            return;
         }
     }
 
-    LOGI("FlashTest: DATA VERIFIED");
-
-exit:
-    vPortFree(writeBuff);
-    vPortFree(readBuff);
-
-    LOGI("=== Flash Test End ===");
+    LOGI("DATA VERIFIED OK");
+    LOGI("=== AT24C64 Test End ===");
 }
-
 
 /// @brief 测试各种模块
 /// @param param 
@@ -134,8 +98,14 @@ void test1CoreTask(void *param) {
     TestResource *test_res = (TestResource*)param;
     UNUSED(test_res);
 
+    for (uint8_t addr = 0; addr < 128; addr++) {
+        if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
+            LOGI("Found device at 0x%02X", addr);
+        }
+    }
+
     // fatfsTest();
-    flashTest();
+    at24c64Test();
 
     while (1) {
         vTaskDelay(TIME_WAIT_LONG);

@@ -2,10 +2,6 @@
 #include "string.h"
 
 I2C_HandleTypeDef hi2c1;
-DMA_HandleTypeDef hdma_i2c1_rx;
-DMA_HandleTypeDef hdma_i2c1_tx;
-uint8_t i2c1_tx_buff[I2C1_BUFF_SIZE];
-uint8_t i2c1_rx_buff[I2C1_BUFF_SIZE];
 
 void i2cInit(void) {
     GPIO_InitTypeDef GPIO_InitStruct = { 0 };
@@ -15,6 +11,7 @@ void i2cInit(void) {
     GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // I2C1 参数配置
