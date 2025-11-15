@@ -765,6 +765,11 @@
               <FilePath>..\Drivers\Hardware\Src\at24c64.c</FilePath>
             </File>
             <File>
+              <FileName>tb6612.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Hardware\Src\tb6612.c</FilePath>
+            </File>
+            <File>
               <FileName>w25q64.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\Hardware\Src\w25q64.c</FilePath>

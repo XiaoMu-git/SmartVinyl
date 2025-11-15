@@ -26,6 +26,10 @@ void DebugMon_Handler(void) {
     
 }
 
+void TIM2_IRQHandler(void) {
+    HAL_TIM_IRQHandler(&htim2);
+}
+
 void TIM7_IRQHandler(void) {
     HAL_TIM_IRQHandler(&htim7);
 }

@@ -1,11 +1,53 @@
 #include "tim.h"
 
+TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim7;
-
 
 /// @brief 定时器初始化函数
 void timInit(void) {
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_OC_InitTypeDef sConfigOC = { 0 };
+    __HAL_RCC_TIM2_CLK_ENABLE();
+
+    // TIM2 PWM1 引脚
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     
+    // TIM2 参数配置
+    htim2.Instance = TIM2;
+    htim2.Init.Prescaler = 72 - 1;
+    htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim2.Init.Period = 1000 - 1;
+    htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    if (HAL_TIM_PWM_Init(&htim2) != HAL_OK) {
+        __disable_irq();
+        while (1);
+    }
+
+    // 触发输出参数
+    sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK) {
+        __disable_irq();
+        while (1);
+    }
+
+    // 配置 TIM2 PWM1 参数
+    sConfigOC.OCMode = TIM_OCMODE_PWM1;
+    sConfigOC.Pulse = 0;
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+    if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+        __disable_irq();
+        while (1);
+    }
+
+    // 开启 TIM2 PWM1
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 }
 
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {

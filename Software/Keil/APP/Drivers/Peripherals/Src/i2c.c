@@ -3,6 +3,7 @@
 
 I2C_HandleTypeDef hi2c1;
 
+/// @brief I2C 初始化函数
 void i2cInit(void) {
     GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     __HAL_RCC_I2C1_CLK_ENABLE();

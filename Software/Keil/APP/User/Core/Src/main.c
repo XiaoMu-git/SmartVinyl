@@ -17,6 +17,7 @@ int main(void) {
 
     /* -------- 硬件初始化 -------- */
     at24c64Init(&hi2c1);
+    tb6612Init(&htim2, TIM_CHANNEL_1, 1000, GPIOA, GPIO_PIN_1, GPIOA, GPIO_PIN_2);
     w25q64Init(&hspi1, GPIOA, GPIO_PIN_4);
 
     /* --------- 创建任务 --------- */
