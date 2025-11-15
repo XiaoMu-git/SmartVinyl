@@ -67,6 +67,67 @@ void fatfsTest(void) {
     }
 }
 
+void flashTest() {
+    uint32_t address = 0x00001234;
+    uint32_t size = 4 * 1024;
+    uint8_t *writeBuff = (uint8_t*)pvPortMalloc(size);
+    uint8_t *readBuff  = (uint8_t*)pvPortMalloc(size);
+
+    if (!writeBuff || !readBuff) {
+        LOGI("FlashTest: Malloc Failed!");
+        return;
+    }
+
+    // fill write buffer
+    memset(writeBuff, 0x5A, size);
+    memset(readBuff,  0x00, size);
+
+    LOGI("=== Flash Test Start ===");
+    LOGI("Write Addr: 0x%08lX, Size: %lu bytes", address, size);
+
+    // ---------------------------------------
+    // Write
+    // ---------------------------------------
+    if (flashWriteData(FLASH_DATA_ADDR, address, writeBuff, size) == RET_DONE) {
+        LOGI("FlashTest: Write OK");
+    } else {
+        LOGI("FlashTest: Write FAILED!");
+        goto exit;
+    }
+
+    // ---------------------------------------
+    // Read
+    // ---------------------------------------
+    if (flashReadData(FLASH_DATA_ADDR, address, readBuff, size) == RET_DONE) {
+        LOGI("FlashTest: Read OK");
+    } else {
+        LOGI("FlashTest: Read FAILED!");
+        goto exit;
+    }
+
+    // ---------------------------------------
+    // Verify
+    // ---------------------------------------
+    LOGI("FlashTest: Verifying...");
+
+    for (uint32_t i = 0; i < size; i++) {
+        if (writeBuff[i] != readBuff[i]) {
+            LOGI("FlashTest: Verify Failed At Index %lu: W=0x%02X, R=0x%02X",
+                    i, writeBuff[i], readBuff[i]);
+            goto exit;
+        }
+    }
+
+    LOGI("FlashTest: DATA VERIFIED");
+
+exit:
+    vPortFree(writeBuff);
+    vPortFree(readBuff);
+
+    LOGI("=== Flash Test End ===");
+}
+
+
 /// @brief 测试各种模块
 /// @param param 
 void test1CoreTask(void *param) {
@@ -74,6 +135,7 @@ void test1CoreTask(void *param) {
     UNUSED(test_res);
 
     // fatfsTest();
+    flashTest();
 
     while (1) {
         vTaskDelay(TIME_WAIT_LONG);
@@ -89,7 +151,7 @@ void test2CoreTask(void *param) {
 
     while (1) {
         vTaskList(info);
-        // LOGI("\nname\t\tstate\tprio\tstack\tid\n%s", info);
+        // LOGI("name\t\tstate\tprio\tstack\tid%s", info);
         LOGI("Stack space remain %u Byte.", (unsigned int)xPortGetFreeHeapSize());
         for (uint8_t i = 0; i < 5; i++) {
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);

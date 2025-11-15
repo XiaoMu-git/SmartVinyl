@@ -6,15 +6,15 @@
 #define FLASH_BASE_ADDR     FLASH_BASE
 #define FLASH_SIZE          (uint32_t)0x00080000
 
-#define BOOT_SIZE           (uint32_t)0x00010000
-#define APP1_SIZE           (uint32_t)0x00020000
-#define APP2_SIZE           (uint32_t)0x00020000
-#define DATA_SIZE           (uint32_t)FLASH_SIZE - BOOT_SIZE - APP1_SIZE - APP2_SIZE
+#define FLASH_BOOT_SIZE     (uint32_t)0x00010000
+#define FLASH_APP1_SIZE     (uint32_t)0x00020000
+#define FLASH_APP2_SIZE     (uint32_t)0x00020000
+#define FLASH_DATA_SIZE     (uint32_t)FLASH_SIZE - FLASH_BOOT_SIZE - FLASH_APP1_SIZE - FLASH_APP2_SIZE
 
-#define BOOT_ADDR           (uint32_t)FLASH_BASE_ADDR
-#define APP1_ADDR           (uint32_t)BOOT_ADDR + BOOT_SIZE
-#define APP2_ADDR           (uint32_t)APP1_ADDR + APP1_SIZE
-#define DATA_ADDR           (uint32_t)APP2_ADDR + APP2_SIZE
+#define FLASH_BOOT_ADDR     (uint32_t)FLASH_BASE_ADDR
+#define FLASH_APP1_ADDR     (uint32_t)FLASH_BOOT_ADDR + FLASH_BOOT_SIZE
+#define FLASH_APP2_ADDR     (uint32_t)FLASH_APP1_ADDR + FLASH_APP1_SIZE
+#define FLASH_DATA_ADDR     (uint32_t)FLASH_APP2_ADDR + FLASH_APP2_SIZE
 
 void flashInit(void);
 uint8_t flashReadData(uint32_t offset, uint32_t addr, uint8_t *buff, uint32_t length);

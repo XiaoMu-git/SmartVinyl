@@ -6,10 +6,10 @@ int main(void) {
     /* -------- 外设初始化 -------- */
     clockInit();
     dmaInit();
-    // flashInit();
+    flashInit();
     // i2cInit();
     gpioInit();
-    // sdioInit();
+    sdioInit();
     spiInit();
     timInit();
     uartInit();
